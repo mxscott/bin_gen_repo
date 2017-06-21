@@ -24,6 +24,12 @@ Class BinGenerator(object):
          if ((int(next_line[1]) - self.stop < max_gap_size) and (int(self.reference_name) == int(next_line[0])))     #check refrence and gap distance
             self.stop = int(next_line[2])
             self.bed_info.append(line_num)
+         else
+            yield Bin(self.start, self.stop, self.reference_name, self.bed_info)
+            next_line = self.file.readline.split('\t')       #copy next input line to next_line
+            line_num += 1
+            self.bed_info[:] = []
+
       else
           yield Bin(self.start, self.stop, self.reference_name, self.bed_info)
           next_line = self.file.readline.split('\t')       #copy next input line to next_line
