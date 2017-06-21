@@ -7,10 +7,13 @@ class BinGenerator(object):
    self.reference_name = None
    self.bed_info = []
    self.file = open(file_path)       #open input file
-   #self.file.readline()     #read past the BED file header
+   self.file.readline()     #read past the BED file header
 
 
   def __iter__(self):
+   num_bins = 0
+   total_bin_size = 0
+   size = 0
    next_line = self.file.readline()                       #copy next input line to next_line
    next_line = next_line.split('\t')                      #splits line into list around tabs
    line_num = 1
@@ -26,6 +29,8 @@ class BinGenerator(object):
          next_line = self.file.readline()                 #copy next line of input to next_line
          if (next_line == ""):                             #checks for EOF
              yield self
+             num_bins += 1
+             total_bin_size += (self.stop - self.start)
              return
          next_line = next_line.split('\t')
 
@@ -36,6 +41,8 @@ class BinGenerator(object):
          else:
 
             yield self
+            num_bins += 1
+            total_bin_size += (self.stop - self.start)
             self.bed_info[:] = []
             self.reference_name = next_line[0]
             self.start = int(next_line[1])
@@ -44,11 +51,13 @@ class BinGenerator(object):
 
 
       else:
-         
+
           yield self
+          num_bins += 1
+          total_bin_size += (self.stop - self.start)
           next_line = self.file.readline()             #copy next input line to next_line
           if (next_line == ""):
-              return
+              return 
           next_line = next_line.split('\t')
 
           line_num += 1
