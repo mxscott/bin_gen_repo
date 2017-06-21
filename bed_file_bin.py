@@ -7,7 +7,7 @@ if __name__ == '__main__':
     parser.add_argument('bedfile', type=str)
     args = parser.parse_args()
 
-    bin = BedFileBin(args.bedfile, max_gap_size=args.gap, bin_size=args.size)
+    bin = BinGenerator(args.bedfile, args.gap, args.size)
 
     for b in bin:
         print b
