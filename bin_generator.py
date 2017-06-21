@@ -7,15 +7,15 @@ class BinGenerator(object):
    self.reference_name = None
    self.bed_info = []
    self.file = open(file_path)       #open input file
-   self.file.readline()     #read past the BED file header
+
 
 
   def __iter__(self):
-   num_bins = 0
-   total_bin_size = 0
-   size = 0
    next_line = self.file.readline()                       #copy next input line to next_line
    next_line = next_line.split('\t')                      #splits line into list around tabs
+   if self.isSpecialLine(next_line):
+       next_line = self.file.readline()                       #copy next input line to next_line
+       next_line = next_line.split('\t')
    line_num = 1
    self.reference_name = next_line[0]
    self.start = int(next_line[1])
@@ -29,8 +29,6 @@ class BinGenerator(object):
          next_line = self.file.readline()                 #copy next line of input to next_line
          if (next_line == ""):                             #checks for EOF
              yield self
-             num_bins += 1
-             total_bin_size += (self.stop - self.start)
              return
          next_line = next_line.split('\t')
 
@@ -41,8 +39,6 @@ class BinGenerator(object):
          else:
 
             yield self
-            num_bins += 1
-            total_bin_size += (self.stop - self.start)
             self.bed_info[:] = []
             self.reference_name = next_line[0]
             self.start = int(next_line[1])
@@ -53,11 +49,9 @@ class BinGenerator(object):
       else:
 
           yield self
-          num_bins += 1
-          total_bin_size += (self.stop - self.start)
           next_line = self.file.readline()             #copy next input line to next_line
           if (next_line == ""):
-              return 
+              return
           next_line = next_line.split('\t')
 
           line_num += 1
@@ -70,3 +64,19 @@ class BinGenerator(object):
 
   def __str__(self):
    return "{}: ({}, {}, {}) {} regions".format(self.__class__, self.reference_name, self.start, self.stop, len(self.bed_info))
+
+
+  def isInt(self, i):
+    try:
+        int(i)
+        return True
+    except ValueError:
+        return False
+
+  def isSpecialLine(self, line):
+      if len(line) < 3:
+          return True
+      if (self.isInt(line[1]) and self.isInt(line[2])):
+          return False
+      else:
+          return True
